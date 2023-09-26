@@ -2,7 +2,7 @@ from django.shortcuts import render,HttpResponse
 from django.db import models as mod
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from . serializer import pracquestmodelSerializers,TheorymodelSerializers,FacultyMapmodelSerializers,SubjectmodelSerializers,FacultymodelSerializers,UserRegisterSerializer, UserLoginSerializer,DepartmentmodelSerializers,DivisionmodelSerializers
+from . serializer import pracquestmodelSerializers,TheorymodelSerializers,FacultyMapmodelSerializers,SubjectmodelSerializers,FacultymodelSerializers,UserRegisterSerializer, UserLoginSerializer,DepartmentmodelSerializers,DivisionmodelSerializers,ImportSerializer
 from rest_framework.decorators import api_view,permission_classes,authentication_classes
 from . import models
 from rest_framework.response import Response
@@ -21,6 +21,8 @@ User = settings.AUTH_USER_MODEL
 from .filters import SubjectsFilter,FacultyFilter,MapfacultyFilter,TheoryQuestionFilter,PracticalQuestionFilter,DepartmentFilter,DivisionFilter
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
+from rest_framework.parsers import MultiPartParser,FormParser
+import pandas as pd
 # Create your views here.
 
 
@@ -152,6 +154,9 @@ def mapfacultyDetail(requests):
         serializer = FacultyMapmodelSerializers(queryset,many=True)
         
         return Response(serializer.data)
+    
+
+
 
 
 # @permission_classes([IsAuthenticatedOrReadOnly])
@@ -382,3 +387,158 @@ class GetCSRFToken(APIView):
     def get(self, request, format=None):
         return Response({ 'success': 'CSRF cookie set' })
 #authentication ends
+
+
+
+# all bulk creation of rows and upladed files views are here
+
+#for bulk import  for department
+class ImportDepartmentDetail(APIView):
+    serializer = ImportSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def post(self,request):
+        try:
+            data =  request.FILES
+            serializer = self.serializer(data = data)
+            if serializer.is_valid():
+                excel_file = data.get('file')
+                df = pd.read_excel(excel_file,sheet_name=0)
+                alldep = []
+                for index,row in df.iterrows():
+                    name = row['name']
+                    department = models.Department.objects.filter(name=name).exists()
+                    if department:
+                        continue
+                    else:
+                        dep = models.Department(name=name)
+                        alldep.append(dep)
+                models.Department.objects.bulk_create(alldep)
+                res = {"status":"posted succesfully"}
+                return Response(res,status=status.HTTP_201_CREATED)
+        except:
+            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+#for bulk import  for division
+class ImportDivisionDetail(APIView):
+    serializer = ImportSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def post(self,request):
+        try:
+            data =  request.FILES
+            serializer = self.serializer(data = data)
+            if serializer.is_valid():
+                excel_file = data.get('file')
+                df = pd.read_excel(excel_file,sheet_name=0)
+                alldiv = []
+                for index,row in df.iterrows():
+                    department = row['department']
+                    num_tutorial_batch = row['num_tutorial_batch']
+                    num_pract_batch = row['num_pract_batch']
+                    name = row['name']
+                    division = models.Division.objects.filter(name=name).exists()
+                    if division:
+                        continue
+                    else:
+                        div = models.Department(name=name,num_tutorial_batch=num_tutorial_batch,num_pract_batch=num_pract_batch,department=department)
+                        alldiv.append(div)
+                models.Division.objects.bulk_create(alldiv)
+                res = {"status":"posted succesfully"}
+                return Response(res,status=status.HTTP_201_CREATED)
+        except:
+            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+#for bulk import  for faculty
+class ImportFacultyDetail(APIView):
+    serializer = ImportSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def post(self,request):
+        try:
+            data =  request.FILES
+            serializer = self.serializer(data = data)
+            if serializer.is_valid():
+                excel_file = data.get('file')
+                df = pd.read_excel(excel_file,sheet_name=0)
+                allfac = []
+                for index,row in df.iterrows():
+                    faculty_name = row['faculty_name']
+                    department = row['department']
+                    faculty = models.Faculty.objects.filter(name=faculty_name).exists()
+                    if faculty:
+                        continue
+                    else:
+                        dep = models.Faculty(faculty_name=faculty_name,department=department)
+                        allfac.append(dep)
+                models.Faculty.objects.bulk_create(allfac)
+                res = {"status":"posted succesfully"}
+                return Response(res,status=status.HTTP_201_CREATED)
+        except:
+            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+#for bulk import  for SUBJECTS
+class ImportSubjectDetail(APIView):
+    serializer = ImportSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def post(self,request):
+        try:
+            data =  request.FILES
+            serializer = self.serializer(data = data)
+            if serializer.is_valid():
+                excel_file = data.get('file')
+                df = pd.read_excel(excel_file,sheet_name=0)
+                allsub = []
+                for index,row in df.iterrows():
+                    subject = row['subject']
+                    semester = row['semester']
+                    department = row['department']
+                    subject_ = models.Subject.objects.filter(subject=subject).exists()
+                    if subject_:
+                        continue
+                    else:
+                        dep = models.Subject(subject=subject,department=department,semester=semester)
+                        allsub.append(dep)
+                models.Subject.objects.bulk_create(allsub)
+                res = {"status":"posted succesfully"}
+                return Response(res,status=status.HTTP_201_CREATED)
+        except:
+            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+#for bulk import  for Mapfaculty
+class ImportMapDetail(APIView):
+    serializer = ImportSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def post(self,request):
+        try:
+            data =  request.FILES
+            serializer = self.serializer(data = data)
+            if serializer.is_valid():
+                excel_file = data.get('file')
+                df = pd.read_excel(excel_file,sheet_name=0)
+                allsub = []
+                for index,row in df.iterrows():
+                    sem = row["sem"]
+                    faculty = row["faculty"]
+                    department = row["department"]
+                    subject = row["subject"]
+                    division = row["division"]
+                    theory = row["theory"]
+                    practical = row["practical"]
+                    tutorial = row["tutorial"]
+                    practical_batch = row["practical_batch"]
+                    tutorial_batch = row["tutorial_batch"]
+                    year = row["year"]
+                    
+                    dep = models.Mapfaculty(sem=sem,faculty=faculty,department = department,subject=subject,division=division,theory=theory,practical=practical,tutorial=tutorial,practical_batch=practical_batch,tutorial_batch=tutorial_batch,year=year)
+                    allsub.append(dep)
+                models.Mapfaculty.objects.bulk_create(allsub)
+                res = {"status":"posted succesfully"}
+                return Response(res,status=status.HTTP_201_CREATED)
+        except:
+            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)

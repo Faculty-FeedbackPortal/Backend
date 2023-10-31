@@ -250,25 +250,25 @@ def DepartmentDetail(requests):
 # @permission_classes([IsAuthenticatedOrReadOnly])
 @api_view(["GET","POST"])
 def Calculateavg(requests):
-    # try:
-    faculty = "Yashkumar"
-    year = 2023
-    sem = 5
-    # faculty = requests.POST['faculty']
-    # year = requests.POST['year']
-    # sem = requests.POST['sem']
-    cal = {}
-    above = {}
-    below = {}
-    practical_feedback = {}
-    theory_feedback = {}
-    abov1 = {}
-    bel1 = {}
-    abov12 = {}
-    bel12 = {}
-    if models.Faculty.objects.filter(faculty_name=faculty).exists():
+    try:
+        faculty = "Yashkumar"
+        year = 2023
+        sem = 5
+        # faculty = requests.POST['faculty']
+        # year = requests.POST['year']
+        # sem = requests.POST['sem']
+        cal = {}
+        above = {}
+        below = {}
+        practical_feedback = {}
+        theory_feedback = {}
+        abov1 = {}
+        bel1 = {}
+        abov12 = {}
+        bel12 = {}
+        if models.Faculty.objects.filter(faculty_name=faculty).exists():
         id = models.Faculty.objects.get(faculty_name=faculty).id
-    if models.Mapfaculty.objects.filter(faculty=id).exists():
+        if models.Mapfaculty.objects.filter(faculty=id).exists():
         subject = models.Mapfaculty.objects.get(faculty=id).subject.subject
         department = models.Mapfaculty.objects.get(faculty=id).department.name
         division = models.Mapfaculty.objects.get(faculty=id).division.name
@@ -305,8 +305,8 @@ def Calculateavg(requests):
         cal["below"] = below
         print(cal)
         return Response(cal,status=status.HTTP_200_OK)
-    # except :
-    #     return Response({ 'error': 'Atleast One response should be there in both Practical and Theory Feedback' })
+    except :
+        return Response({ 'error': 'Atleast One response should be there in both Practical and Theory Feedback' })
     
 
 @api_view(['GET',"POST"])  

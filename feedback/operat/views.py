@@ -273,6 +273,12 @@ def Calculateavg(requests):
         bel1 = []
         abov12 = []
         bel12 = []
+        hight = 0
+        lowt = 0
+        totalt = 0
+        highp = 0
+        low = 0
+        totalp = 0
         
         if models.Faculty.objects.filter(faculty_name=faculty).exists():
             id = models.Faculty.objects.get(faculty_name=faculty).id
@@ -291,10 +297,16 @@ def Calculateavg(requests):
             cal['batch'] = batch
             cal['semester'] = sem
             cal['f_date'] = year
-
+            hight = Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').count()
+            lowt = Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').count()
+            totalt = Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).count()
+            highp = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').count()
+            lowp = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').count()
+            totalp = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).count()
             for i in range(12):
                 # theory_feedback_quest_abov[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=id,semester = sem,f_date=year, attendence = 'above')[f'Q{i+1}__avg']
                 if Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').exists():
+                    
                     above['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
                     abov1.append(float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
                     # abov1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
@@ -313,8 +325,14 @@ def Calculateavg(requests):
                     bel12.append(float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
                     # bel12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
                 practical_feedback[f"Q{i+1}"] = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
+            above["hight"] = hight
+            above["highp"] = highp
+            below["lowt"] = lowt
+            below["lowp"] = lowp
             cal["practical_feedback"] = practical_feedback
             cal["theory_feedback"] = theory_feedback
+            cal["totalt"] = totalt
+            cal["totalp"] = totalp
             above['theory_q'] = abov1
             above["practical_q"] = abov12
             below['theory_q'] = bel1

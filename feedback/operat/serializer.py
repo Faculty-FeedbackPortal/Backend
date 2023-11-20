@@ -118,3 +118,7 @@ class DivisionmodelSerializers(serializers.ModelSerializer):
         fields = "__all__"
     def create(self,validate_data):
         return  models.Division.objects.create(**validate_data)
+    
+
+class ImportSerializer(serializers.Serializer):
+    file = serializers.FileField()

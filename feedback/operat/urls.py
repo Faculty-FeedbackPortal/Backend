@@ -12,6 +12,14 @@ urlpatterns = [
     path('calculate/', views.Calculateavg,name='calculate'),
     path('department/', views.DepartmentDetail,name='department'),
     path("division/", views.DivisionDetail,name="division"),
+    #bulk creating apis
+    path('departmentbulk/', views.ImportDepartmentDetail.as_view(),name='departmentbulk'),
+    path("divisionbulk/", views.ImportDivisionDetail.as_view(),name="divisionbulk"),
+    path('subjectbulk/', views.ImportSubjectDetail.as_view(),name='Subjectbulk'),
+    path('facultybulk/', views.ImportFacultyDetail.as_view(),name='facultybulk'),
+    path('mapfacultybulk/', views.ImportMapDetail.as_view(),name='mapfacultybulk'),
+    
+    ##end
     #authentication
     path('authenticated/', views.CheckAuthenticatedView.as_view()),
     path('register/', views.UserRegister.as_view(), name='register'),

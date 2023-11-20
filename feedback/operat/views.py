@@ -255,37 +255,64 @@ def DepartmentDetail(requests):
 # @permission_classes([IsAuthenticatedOrReadOnly])
 @api_view(["GET","POST"])
 def Calculateavg(requests):
-    faculty = "Mrunali"
-    year = 2023
-    sem = 5
-    # faculty = requests.POST['faculty']
-    # year = requests.POST['year']
-    # sem = requests.POST['sem']
-    cal = {}
-    practical_feedback = {}
-    theory_feedback = {}
-    if models.Faculty.objects.filter(faculty_name=faculty).exists():
-        id = models.Faculty.objects.get(faculty_name=faculty).id
-    if models.Mapfaculty.objects.filter(faculty=id).exists():
-        subject = models.Mapfaculty.objects.get(faculty=id).subject.subject
-        department = models.Mapfaculty.objects.get(faculty=id).department
-        division = models.Mapfaculty.objects.get(faculty=id).divison
-        batch = models.Mapfaculty.objects.get(faculty=id).practical_batch
-        cal['faculty'] = faculty
-        cal['subject'] = subject
-        cal['department'] = department
-        cal['division'] = division
-        cal['batch'] = batch
-        cal['batch'] = batch
-        cal['semester'] = sem
-        cal['f_date'] = year
-        for i in range(12):
-            theory_feedback[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=id,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
-        for i in range(8):
-            practical_feedback[f"Q{i+1}"] = Practical_feedback.objects.filter(faculty=id,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
-        cal["practical_feedback"] = practical_feedback
-        cal["theory_feedback"] = theory_feedback
-        return JsonResponse(cal)
+    try:
+        faculty = "Yashkumar"
+        year = 2023
+        sem = 5
+        # faculty = requests.POST['faculty']
+        # year = requests.POST['year']
+        # sem = requests.POST['sem']
+        cal = {}
+        above = {}
+        below = {}
+        practical_feedback = {}
+        theory_feedback = {}
+        abov1 = {}
+        bel1 = {}
+        abov12 = {}
+        bel12 = {}
+        if models.Faculty.objects.filter(faculty_name=faculty).exists():
+            id = models.Faculty.objects.get(faculty_name=faculty).id
+        if models.Mapfaculty.objects.filter(faculty=id).exists():
+            subject = models.Mapfaculty.objects.get(faculty=id).subject.subject
+            department = models.Mapfaculty.objects.get(faculty=id).department.name
+            division = models.Mapfaculty.objects.get(faculty=id).division.name
+            batch = models.Mapfaculty.objects.get(faculty=id).practical_batch
+            cal['faculty'] = faculty
+            cal['subject'] = subject
+            cal['department'] = department
+            cal['division'] = division
+            cal['batch'] = batch
+            cal['batch'] = batch
+            cal['semester'] = sem
+            cal['f_date'] = year
+
+            for i in range(12):
+                # theory_feedback_quest_abov[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=id,semester = sem,f_date=year, attendence = 'above')[f'Q{i+1}__avg']
+                above['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                abov1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                below['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                bel1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                theory_feedback[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
+            for i in range(8):
+                above['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                abov12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                below['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                bel12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                practical_feedback[f"Q{i+1}"] = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
+            cal["practical_feedback"] = practical_feedback
+            cal["theory_feedback"] = theory_feedback
+            above['theory_q'] = abov1
+            above["practical_q"] = abov12
+            below['theory_q'] = bel1
+            below["practical_q"] = bel12
+            cal["above"] = above
+            cal["below"] = below
+            print(cal)
+            return Response(cal,status=status.HTTP_200_OK)
+    except :
+        return Response({ 'error': 'Atleast One response should be there in both Practical and Theory Feedback' })
+    
 
 @api_view(['GET',"POST"])  
 def DivisionDetail(requests):
@@ -387,8 +414,6 @@ class GetCSRFToken(APIView):
     def get(self, request, format=None):
         return Response({ 'success': 'CSRF cookie set' })
 #authentication ends
-
-
 
 # all bulk creation of rows and upladed files views are here
 
@@ -542,3 +567,12 @@ class ImportMapDetail(APIView):
                 return Response(res,status=status.HTTP_201_CREATED)
         except:
             Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+def print_all(requests):
+    faculty = "Mrunali"
+    year = 2023
+    sem = 5
+    if models.Faculty.objects.filter(faculty_name=faculty).exists():
+        id = models.Faculty.objects.get(faculty_name=faculty).id
+    print(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above')[f'Q1__avg'])
+    return requests.data

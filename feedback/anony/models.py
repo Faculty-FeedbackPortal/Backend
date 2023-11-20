@@ -28,7 +28,7 @@ class Practical_feedback(models.Model):
     semester = models.IntegerField()
     # f_date = models.IntegerField(default=datetime.date.today().year)
     f_date = models.CharField(max_length=200)
-    attendence = models.CharField(max_length=30)
+    attendence = models.CharField(max_length=30) #its takes only above and below field
     # for obj in practical_questions.objects.all():
     #     Z = obj.name
     #     X = locals()
@@ -84,3 +84,6 @@ class Theory_feedback(models.Model):
     #     return f"Theory_feedback : {self.id}"
     
 
+class StudentUser(models.Model):
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=30)

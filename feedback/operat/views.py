@@ -252,8 +252,9 @@ def DepartmentDetail(requests):
 def Calculateavg(requests):
     try:
         faculty = "Yashkumar"
-        year = 2023
+        year = '2023'
         sem = 5
+        subject1 = 'DWM'
         # faculty = requests.POST['faculty']
         # year = requests.POST['year']
         # sem = requests.POST['sem']
@@ -266,13 +267,16 @@ def Calculateavg(requests):
         bel1 = {}
         abov12 = {}
         bel12 = {}
+        
         if models.Faculty.objects.filter(faculty_name=faculty).exists():
             id = models.Faculty.objects.get(faculty_name=faculty).id
-        if models.Mapfaculty.objects.filter(faculty=id).exists():
-            subject = models.Mapfaculty.objects.get(faculty=id).subject.subject
-            department = models.Mapfaculty.objects.get(faculty=id).department.name
-            division = models.Mapfaculty.objects.get(faculty=id).division.name
-            batch = models.Mapfaculty.objects.get(faculty=id).practical_batch
+        if models.Subjects.objects.filter(subject=subject1).exists():
+            subid = models.Subjects.objects.get(subject=subject1).id
+        if models.Mapfaculty.objects.filter(faculty=id,subject=subid).exists():
+            subject = models.Mapfaculty.objects.get(faculty=id,subject=subid).subject.subject
+            department = models.Mapfaculty.objects.get(faculty=id,subject=subid).department.name
+            division = models.Mapfaculty.objects.get(faculty=id,subject=subid).division.name
+            batch = models.Mapfaculty.objects.get(faculty=id,subject=subid).practical_batch
             cal['faculty'] = faculty
             cal['subject'] = subject
             cal['department'] = department
@@ -305,7 +309,8 @@ def Calculateavg(requests):
             cal["below"] = below
             print(cal)
             return Response(cal,status=status.HTTP_200_OK)
-    except :
+    except Exception as e:
+        print(e)
         return Response({ 'error': 'Atleast One response should be there in both Practical and Theory Feedback' })
     
 

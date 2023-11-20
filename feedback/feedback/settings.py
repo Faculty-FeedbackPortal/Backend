@@ -157,8 +157,12 @@ AUTH_USER_MODEL = 'operat.AppUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+<<<<<<< HEAD
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
+=======
+        'rest_framework.authentication.SessionAuthentication',
+>>>>>>> 346609edf3cc30545da6afc9260ed1b0bfc76e5f
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [

@@ -257,10 +257,10 @@ def DepartmentDetail(requests):
 @api_view(["GET","POST"])
 def Calculateavg(requests):
     try:
-        faculty = "Yashkumar"
-        year = '2023'
-        sem = 5
-        subject1 = 'DWM'
+        faculty = "Yash"
+        year = '20/11/2023'
+        sem = 1
+        subject1 = 'DSA'
         # faculty = requests.POST['faculty']
         # year = requests.POST['year']
         # sem = requests.POST['sem']

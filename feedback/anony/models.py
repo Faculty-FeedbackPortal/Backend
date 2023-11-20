@@ -28,7 +28,7 @@ class Practical_feedback(models.Model):
     semester = models.IntegerField()
     # f_date = models.IntegerField(default=datetime.date.today().year)
     f_date = models.CharField(max_length=200)
-    attendence = models.CharField(max_length=30) #its takes only above and below field
+    attendance = models.CharField(max_length=30, null=True) #its takes only above and below field
     # for obj in practical_questions.objects.all():
     #     Z = obj.name
     #     X = locals()
@@ -41,7 +41,7 @@ class Practical_feedback(models.Model):
     Q6 = models.IntegerField(null=True)
     Q7 = models.IntegerField(null=True)
     Q8 = models.IntegerField(null=True)
-    comment = models.TextField()
+    comment = models.TextField(default="comment")
 
     def __str__(self):
         return f"Practical_feedback : {self.id}"
@@ -60,7 +60,7 @@ class Theory_feedback(models.Model):
     semester = models.IntegerField()
     # f_date = models.IntegerField(default=datetime.date.today().year)
     f_date = models.CharField(max_length=200)
-    attendence = models.CharField(max_length=30)
+    attendance = models.CharField(max_length=30, null=True) 
     # for obj in theory_questions.objects.all():
     #     Z = obj.name
     #     X = locals()
@@ -78,7 +78,7 @@ class Theory_feedback(models.Model):
     Q10 = models.IntegerField(null=True)
     Q11 = models.IntegerField(null=True)
     Q12 = models.IntegerField(null=True)
-    comment = models.TextField()
+    comment = models.TextField(null=True)
 
     # def __str__(self):
     #     return f"Theory_feedback : {self.id}"

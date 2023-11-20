@@ -39,7 +39,7 @@ from .filters import TheoryFilter,PracticalFilter
 @permission_classes([])
 def TheoryFeedback(requests):
     if requests.method == "POST":   
-        serializer = theoryfeedbackmodelSerializers(requests.data)
+        serializer = theoryfeedbackmodelSerializers(data=requests.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -60,7 +60,7 @@ def TheoryFeedback(requests):
 @permission_classes([])     
 def PracticalFeedback(requests):
     if requests.method == "POST":
-        serializer = pracfeedbackmodelSerializers(requests.data)
+        serializer = pracfeedbackmodelSerializers(data=requests.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

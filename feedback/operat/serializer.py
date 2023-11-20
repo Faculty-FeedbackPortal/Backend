@@ -119,6 +119,14 @@ class DivisionmodelSerializers(serializers.ModelSerializer):
     def create(self,validate_data):
         return  models.Division.objects.create(**validate_data)
     
+#Serializer for academic year
+class AcadmodelSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.Academic_year
+        fields = "__all__"
+    def create(self,validate_data):
+        return  models.Academic_year.objects.create(**validate_data)
+    
 
 class ImportSerializer(serializers.Serializer):
     file = serializers.FileField()

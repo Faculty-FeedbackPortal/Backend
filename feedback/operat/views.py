@@ -3,7 +3,7 @@ from django.db import models as mod
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from . serializer import pracquestmodelSerializers,TheorymodelSerializers,FacultyMapmodelSerializers,SubjectmodelSerializers,FacultymodelSerializers,UserRegisterSerializer, UserLoginSerializer,DepartmentmodelSerializers,DivisionmodelSerializers,ImportSerializer
-from . serializer import pracquestmodelSerializers,TheorymodelSerializers,FacultyMapmodelSerializers,SubjectmodelSerializers,FacultymodelSerializers,UserRegisterSerializer, UserLoginSerializer,DepartmentmodelSerializers,DivisionmodelSerializers,FacultyMapmodelNewSerializers
+from . serializer import pracquestmodelSerializers,TheorymodelSerializers,FacultyMapmodelSerializers,SubjectmodelSerializers,FacultymodelSerializers,UserRegisterSerializer, UserLoginSerializer,DepartmentmodelSerializers,DivisionmodelSerializers,FacultyMapmodelNewSerializers, AcadmodelSerializers
 from rest_framework.decorators import api_view,permission_classes,authentication_classes
 from . import models
 from rest_framework.response import Response
@@ -257,16 +257,16 @@ def DepartmentDetail(requests):
 @api_view(["GET","POST"])
 def Calculateavg(requests):
     try:
-        faculty = "Yashkumar"
-        year = '2023'
-        sem = 5
-        subject1 = 'DWM'
+        faculty = "Yash"
+        year = '20/11/2023'
+        sem = 1
+        subject1 = 'DSA'
         # faculty = requests.POST['faculty']
         # year = requests.POST['year']
         # sem = requests.POST['sem']
         cal = {}
-        above = {}
-        below = {}
+        high = {}
+        low = {}
         practical_feedback = {}
         theory_feedback = {}
         abov1 = []
@@ -304,41 +304,38 @@ def Calculateavg(requests):
             lowp = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').count()
             totalp = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).count()
             for i in range(12):
-                # theory_feedback_quest_abov[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=id,semester = sem,f_date=year, attendence = 'above')[f'Q{i+1}__avg']
-                if Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').exists():
-                    
-                    above['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                    abov1.append(float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
-                    # abov1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                if Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').exists():
-                    below['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                    bel1.append(float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
-                    # bel1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                # theory_feedback_quest_abov[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=id,semester = sem,f_date=year, attendance = 'high')[f'Q{i+1}__avg']
+                if Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').exists():
+                    high['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                    abov1.append(float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
+                    # abov1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'high').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                if Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').exists():
+                    low['theory'] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                    bel1.append(float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
+                    # bel1[f"Q{i+1}"] = float(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'low').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
                 theory_feedback[f"Q{i+1}"] = Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
             for i in range(8):
-                if Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').exists():
-                    above['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                    abov12.append(float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
-                    # abov12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                if Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').exists():
-                    below['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
-                    bel12.append(float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
-                    # bel12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                if Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').exists():
+                    high['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                    abov12.append(float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'above').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
+                    # abov12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'high').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                if Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').exists():
+                    low['practical'] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
+                    bel12.append(float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'below').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']))
+                    # bel12[f"Q{i+1}"] = float(Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'low').aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg'])
                 practical_feedback[f"Q{i+1}"] = Practical_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year).aggregate(mod.Avg(f"Q{i+1}"))[f'Q{i+1}__avg']
-            above["hight"] = hight
-            above["highp"] = highp
-            below["lowt"] = lowt
-            below["lowp"] = lowp
+            high["hight"] = hight
+            highp["highp"] = highp
+            low["lowt"] = lowt
+            low["lowp"] = lowp
             cal["practical_feedback"] = practical_feedback
             cal["theory_feedback"] = theory_feedback
-            cal["totalt"] = totalt
-            cal["totalp"] = totalp
-            above['theory_q'] = abov1
-            above["practical_q"] = abov12
-            below['theory_q'] = bel1
-            below["practical_q"] = bel12
-            cal["above"] = above
-            cal["below"] = below
+            high['theory_q'] = abov1
+            high["practical_q"] = abov12
+            low['theory_q'] = bel1
+            low["practical_q"] = bel12
+            cal["high"] = high
+            cal["low"] = low
 
             return Response(cal,status=status.HTTP_200_OK)
     except Exception as e:
@@ -445,7 +442,7 @@ class UserLogout(APIView):
     authentication_classes = ()
     def post(self, request):
         request.user.auth_token.delete()
-        return Response(status=status.HTTP_200_OK)  
+        return Response({"status":"posted succesfully"}, status=status.HTTP_200_OK)  
 		# logout(request)
        
 
@@ -466,11 +463,14 @@ class ImportDepartmentDetail(APIView):
     parser_classes = [MultiPartParser,FormParser]
 
     def post(self,request):
+        # print(request.FILES)
+        # print(request.data)
         try:
-            data =  request.FILES
+            data = request.FILES
             serializer = self.serializer(data = data)
             if serializer.is_valid():
                 excel_file = data.get('file')
+                # print(excel_file)
                 df = pd.read_excel(excel_file,sheet_name=0)
                 alldep = []
                 for index,row in df.iterrows():
@@ -484,8 +484,11 @@ class ImportDepartmentDetail(APIView):
                 models.Department.objects.bulk_create(alldep)
                 res = {"status":"posted succesfully"}
                 return Response(res,status=status.HTTP_201_CREATED)
-        except:
-            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+            # else:
+            #     return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+        except Exception as err:
+            print(err)
+            return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 #for bulk import  for division
@@ -516,7 +519,7 @@ class ImportDivisionDetail(APIView):
                 res = {"status":"posted succesfully"}
                 return Response(res,status=status.HTTP_201_CREATED)
         except:
-            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 #for bulk import  for faculty
@@ -535,17 +538,18 @@ class ImportFacultyDetail(APIView):
                 for index,row in df.iterrows():
                     faculty_name = row['faculty_name']
                     department = row['department']
-                    faculty = models.Faculty.objects.filter(name=faculty_name).exists()
+                    department_instance, created = models.Department.objects.get_or_create(id=department)
+                    faculty = models.Faculty.objects.filter(faculty_name=faculty_name).exists()
                     if faculty:
                         continue
                     else:
-                        dep = models.Faculty(faculty_name=faculty_name,department=department)
+                        dep = models.Faculty(faculty_name=faculty_name,department=department_instance)
                         allfac.append(dep)
                 models.Faculty.objects.bulk_create(allfac)
                 res = {"status":"posted succesfully"}
                 return Response(res,status=status.HTTP_201_CREATED)
         except:
-            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 #for bulk import  for SUBJECTS
 class ImportSubjectDetail(APIView):
@@ -564,17 +568,21 @@ class ImportSubjectDetail(APIView):
                     subject = row['subject']
                     semester = row['semester']
                     department = row['department']
-                    subject_ = models.Subject.objects.filter(subject=subject).exists()
+                    subject_ = models.Subjects.objects.filter(subject=subject).exists()
+                    department_instance, created = models.Department.objects.get_or_create(id=department)
+                    # print(department)
                     if subject_:
                         continue
                     else:
-                        dep = models.Subject(subject=subject,department=department,semester=semester)
+                        dep = models.Subjects(subject=subject,semester=semester,department=department_instance)
                         allsub.append(dep)
-                models.Subject.objects.bulk_create(allsub)
+                print(allsub)
+                models.Subjects.objects.bulk_create(allsub)
                 res = {"status":"posted succesfully"}
                 return Response(res,status=status.HTTP_201_CREATED)
-        except:
-            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+        except Exception as err:
+            print(err)
+            return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 #for bulk import  for Mapfaculty
@@ -609,7 +617,7 @@ class ImportMapDetail(APIView):
                 res = {"status":"posted succesfully"}
                 return Response(res,status=status.HTTP_201_CREATED)
         except:
-            Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response({"status":"Unsuccesfull"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 def print_all(requests):
     faculty = "Mrunali"
@@ -617,5 +625,29 @@ def print_all(requests):
     sem = 5
     if models.Faculty.objects.filter(faculty_name=faculty).exists():
         id = models.Faculty.objects.get(faculty_name=faculty).id
-    print(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendence = 'above')[f'Q1__avg'])
+    print(Theory_feedback.objects.filter(faculty=faculty,semester = sem,f_date=year, attendance = 'high')[f'Q1__avg'])
     return requests.data
+
+class AcademicYView(APIView):   
+    permission_classes = (permissions.AllowAny,)
+    # authentication_classes = (SessionAuthentication,)
+    ##
+    def post(self, request):
+        data = request.data
+        serializer = AcadmodelSerializers(data=data)
+        try:
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response({ 'error': 'Something went wrong' },status=status.HTTP_404_NOT_FOUND)
+    def get(self, request):
+        data = models.Academic_year.objects.all();
+        serializer = AcadmodelSerializers(data=data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # try:
+        #     # if serializer.is_valid():
+        #     #     serializer.save()
+        #         return Response(serializer.data, status=status.HTTP_200_OK)
+        # except:
+        #     return Response({ 'error': 'Something went wrong' },status=status.HTTP_404_NOT_FOUND)

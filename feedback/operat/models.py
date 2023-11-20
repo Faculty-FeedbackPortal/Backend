@@ -134,6 +134,9 @@ class practical_questions(models.Model):
         return f"Q{self.number}"
     
 
+
+    
+
 # print(practical_questions.objects.aggregate(models.Avg("option1")))
 
     
@@ -165,4 +168,10 @@ class Calculatedtheory(models.Model):
 
     def __str__(self):
         return f"Claculated Theory : {self.f_date}"
+    
+
+# Academic year
+class Academic_year(models.Model):
+    academic_year = models.IntegerField(primary_key=True)
+    current_bool = models.BooleanField(default=False)
     
